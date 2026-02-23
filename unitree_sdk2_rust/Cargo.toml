@@ -1,0 +1,24 @@
+[package]
+name = "unitree_sdk2_rust"
+version = "0.1.0"
+edition = "2024"
+description = "Rust SDK for Unitree robots"
+license = "MIT"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde-big-array = "0.5"
+log = "0.4"
+thiserror = "1"
+
+[dev-dependencies]
+env_logger = "0.10"
+
+[[example]]
+name = "go2_sport_client"
+path = "examples/go2_sport_client.rs"
+
+[[example]]
+name = "go2_low_level"
+path = "examples/go2_low_level.rs"
