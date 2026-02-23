@@ -1,12 +1,32 @@
 # unitree_sdk2
 Unitree robot SDK version 2.
 
+A root-level `Makefile` is provided for the most common development tasks.
+Run `make help` to see all available targets.
+
 This repository contains two SDK implementations:
 
 | Directory | Language | Status |
 |-----------|----------|--------|
 | `old_py/` | C++ (original) | Legacy |
 | `unitree_sdk2_rust/` | Rust (new) | Active |
+
+---
+
+## Quick Start (Makefile)
+
+```bash
+make build          # build the Rust SDK
+make test           # run all Rust tests
+make run            # run the default example (go2_sport_client)
+make run EXAMPLE=go2_low_level   # run a specific example
+make run-dev        # start the devcontainer
+make update         # update Rust dependencies
+make docs           # generate & open Rust API docs
+make clean          # remove build artifacts
+make build-cpp      # build the legacy C++ SDK
+make help           # show all targets
+```
 
 ---
 
