@@ -1,4 +1,25 @@
 //! Go2 IDL messages.
+//!
+//! Message types for the Unitree Go2 quadruped robot. All structs derive
+//! [`serde::Serialize`] and [`serde::Deserialize`] for JSON (de)serialization,
+//! plus `Debug`, `Clone`, `Default`, and `PartialEq`.
+//!
+//! ## Message overview
+//!
+//! | Struct | Direction | Description |
+//! |--------|-----------|-------------|
+//! | [`LowCmd`] | SDK -> Robot | Joint-level motor commands |
+//! | [`LowState`] | Robot -> SDK | Joint-level motor/IMU/BMS telemetry |
+//! | [`MotorCmd`] | SDK -> Robot | Single motor command |
+//! | [`MotorState`] | Robot -> SDK | Single motor state |
+//! | [`BmsCmd`] | SDK -> Robot | Battery management command |
+//! | [`BmsState`] | Robot -> SDK | Battery management state |
+//! | [`IMUState`] | Robot -> SDK | IMU sensor readings |
+//! | [`SportModeState`] | Robot -> SDK | Sport-mode telemetry |
+//! | [`WirelessController`] | Robot -> SDK | Handheld controller state |
+//! | [`PathPoint`] | Robot -> SDK | Trajectory waypoint |
+//! | [`TimeSpec`] | — | Timestamp |
+
 pub mod bms_cmd;
 pub mod bms_state;
 pub mod imu_state;

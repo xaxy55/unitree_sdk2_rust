@@ -1,11 +1,28 @@
-//! SportClient - high-level sport-mode API for the Go2 robot.
+//! SportClient — high-level sport-mode API for the Go2 robot.
 //!
-//! TODO: Real implementation would use DDS RPC over CycloneDDS.
-//! All methods currently log their invocation and return 0 (success) as stubs.
+//! Provides a convenient method for every sport API command. All methods
+//! currently log their invocation and return 0 (success) as stubs.
+//!
+//! > **Note:** Real implementation would use DDS RPC over CycloneDDS.
 
 use super::sport_api::*;
 
 /// Controls the Go2 robot's sport/locomotion modes.
+///
+/// Create with [`SportClient::new`], call [`init`](Self::init) once, then
+/// use any of the 40+ command methods to control the robot.
+///
+/// # Examples
+///
+/// ```
+/// use unitree_sdk2_rust::robot::go2::sport::SportClient;
+///
+/// let mut client = SportClient::new(false);
+/// client.init();
+/// assert_eq!(client.stand_up(), 0);
+/// assert_eq!(client.move_cmd(0.5, 0.0, 0.0), 0);
+/// assert_eq!(client.stop_move(), 0);
+/// ```
 pub struct SportClient {
     enable_lease: bool,
     timeout: f32,
@@ -13,6 +30,8 @@ pub struct SportClient {
 
 impl SportClient {
     /// Create a new `SportClient`.
+    ///
+    /// Set `enable_lease` to `true` to request an exclusive control lease.
     pub fn new(enable_lease: bool) -> Self {
         Self {
             enable_lease,
@@ -252,5 +271,100 @@ impl SportClient {
     /// Switch avoid mode.
     pub fn switch_avoid_mode(&self) -> i32 {
         self.call_api(ROBOT_SPORT_API_ID_SWITCHAVOIDMODE, "{}")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_client() -> SportClient {
+        let mut c = SportClient::new(false);
+        c.init();
+        c
+    }
+
+    #[test]
+    fn new_sets_defaults() {
+        let client = SportClient::new(false);
+        assert!(!client.enable_lease);
+        assert_eq!(client.timeout, 10.0);
+    }
+
+    #[test]
+    fn new_with_lease() {
+        let client = SportClient::new(true);
+        assert!(client.enable_lease);
+    }
+
+    #[test]
+    fn set_timeout() {
+        let mut client = SportClient::new(false);
+        client.set_timeout(5.0);
+        assert_eq!(client.timeout, 5.0);
+    }
+
+    #[test]
+    fn basic_commands_return_zero() {
+        let c = make_client();
+        assert_eq!(c.damp(), 0);
+        assert_eq!(c.balance_stand(), 0);
+        assert_eq!(c.stop_move(), 0);
+        assert_eq!(c.stand_up(), 0);
+        assert_eq!(c.stand_down(), 0);
+        assert_eq!(c.recovery_stand(), 0);
+        assert_eq!(c.sit(), 0);
+        assert_eq!(c.rise_sit(), 0);
+        assert_eq!(c.hello(), 0);
+        assert_eq!(c.stretch(), 0);
+        assert_eq!(c.content(), 0);
+        assert_eq!(c.heart(), 0);
+        assert_eq!(c.scrape(), 0);
+    }
+
+    #[test]
+    fn parameterized_commands_return_zero() {
+        let c = make_client();
+        assert_eq!(c.euler(0.1, 0.2, 0.3), 0);
+        assert_eq!(c.move_cmd(1.0, 0.0, 0.5), 0);
+        assert_eq!(c.speed_level(2), 0);
+        assert_eq!(c.switch_joystick(true), 0);
+        assert_eq!(c.pose(true), 0);
+        assert_eq!(c.hand_stand(false), 0);
+    }
+
+    #[test]
+    fn trick_commands_return_zero() {
+        let c = make_client();
+        assert_eq!(c.front_flip(), 0);
+        assert_eq!(c.front_jump(), 0);
+        assert_eq!(c.front_pounce(), 0);
+        assert_eq!(c.dance1(), 0);
+        assert_eq!(c.dance2(), 0);
+        assert_eq!(c.left_flip(), 0);
+        assert_eq!(c.back_flip(), 0);
+    }
+
+    #[test]
+    fn gait_commands_return_zero() {
+        let c = make_client();
+        assert_eq!(c.free_walk(), 0);
+        assert_eq!(c.free_bound(true), 0);
+        assert_eq!(c.free_jump(true), 0);
+        assert_eq!(c.free_avoid(true), 0);
+        assert_eq!(c.classic_walk(true), 0);
+        assert_eq!(c.walk_upright(true), 0);
+        assert_eq!(c.cross_step(true), 0);
+        assert_eq!(c.static_walk(), 0);
+        assert_eq!(c.trot_run(), 0);
+        assert_eq!(c.economic_gait(), 0);
+        assert_eq!(c.switch_avoid_mode(), 0);
+    }
+
+    #[test]
+    fn auto_recover() {
+        let c = make_client();
+        assert_eq!(c.auto_recover_set(true), 0);
+        assert_eq!(c.auto_recover_get(), Ok(false));
     }
 }
